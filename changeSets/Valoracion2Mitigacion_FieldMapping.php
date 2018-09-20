@@ -15,21 +15,22 @@
 
 class Valoracion2Mitigacion_FieldMapping extends cbupdaterWorker {
 
-	function applyChange() {
-		if ($this->hasError()) $this->sendError();
+	public function applyChange() {
+		if ($this->hasError()) {
+			$this->sendError();
+		}
 		if ($this->isApplied()) {
 			$this->sendMsg('Changeset '.get_class($this).' already applied!');
 		} else {
 			$this->sendMsg('This changeset create a FieldMapping Business Map that fills in catrsg when creating a MitigacionRiesgos record from ValoracionRiesgo');
-            include_once 'include/Webservices/Create.php';
+			include_once 'include/Webservices/Create.php';
 			include_once 'include/Webservices/Delete.php';
 			global $current_user,$adb;
 			$usrwsid = vtws_getEntityId('Users').'x'.$current_user->id;
-
-            $res = $adb->pquery("SELECT cbmapid FROM vtiger_cbmap WHERE mapname=?",array('ValoracionRiesgo2MitigacionRiesgos'));
-            $mapid = $adb->query_result($res,0,'cbmapid');
-            $mapidws = vtws_getEntityId('cbMap').'x'.$mapid;
-            vtws_delete($mapidws,$current_user);
+			$res = $adb->pquery("SELECT cbmapid FROM vtiger_cbmap WHERE mapname=?", array('ValoracionRiesgo2MitigacionRiesgos'));
+			$mapid = $adb->query_result($res, 0, 'cbmapid');
+			$mapidws = vtws_getEntityId('cbMap').'x'.$mapid;
+			vtws_delete($mapidws, $current_user);
 
 			$default_values =  array(
 				'mapname' => '',
@@ -61,12 +62,9 @@ class Valoracion2Mitigacion_FieldMapping extends cbupdaterWorker {
 	</fields>
 </map>';
 			vtws_create('cbMap', $rec, $current_user);
-
-
 			$this->sendMsg('Changeset '.get_class($this).' applied!');
 			$this->markApplied(false);
 		}
 		$this->finishExecution();
 	}
-
 }
