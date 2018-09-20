@@ -20,7 +20,7 @@ class Valoracion2Mitigacion_FieldMapping extends cbupdaterWorker {
 		if ($this->isApplied()) {
 			$this->sendMsg('Changeset '.get_class($this).' already applied!');
 		} else {
-			$this->sendMsg('This changeset sets create a FieldMapping Business Map that fills in catrsg when creating a MitigacionRiesgos record from ValoracionRiesgo');
+			$this->sendMsg('This changeset create a FieldMapping Business Map that fills in catrsg when creating a MitigacionRiesgos record from ValoracionRiesgo');
             include_once 'include/Webservices/Create.php';
 			include_once 'include/Webservices/Delete.php';
 			global $current_user,$adb;
@@ -43,23 +43,23 @@ class Valoracion2Mitigacion_FieldMapping extends cbupdaterWorker {
 			$rec['mapname'] = 'ValoracionRiesgo2MitigacionRiesgos';
 			$rec['targetname'] = 'MitigacionRiesgos';
 			$rec['content'] = '<map>
-            <originmodule>
-                <originname>ValoracionRiesgo</originname>
-            </originmodule>
-            <targetmodule>
-                <targetname>MitigacionRiesgos</targetname>
-            </targetmodule>
-            <fields>
-                <field>
-                    <fieldname>catrsg</fieldname>
-                    <Orgfields>
-                        <Orgfield>
-                            <OrgfieldName>catrsg</OrgfieldName>
-                        </Orgfield>
-                    </Orgfields>
-                </field>
-            </fields>
-        </map>';
+	<originmodule>
+		<originname>ValoracionRiesgo</originname>
+	</originmodule>
+	<targetmodule>
+		<targetname>MitigacionRiesgos</targetname>
+	</targetmodule>
+	<fields>
+		<field>
+			<fieldname>catrsg</fieldname>
+			<Orgfields>
+				<Orgfield>
+					<OrgfieldName>catrsg</OrgfieldName>
+				</Orgfield>
+			</Orgfields>
+		</field>
+	</fields>
+</map>';
 			vtws_create('cbMap', $rec, $current_user);
 
 
