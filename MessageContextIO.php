@@ -15,88 +15,7 @@ $logFile='context.io.log';
 $date=date('l jS \of F Y h:i:s A');
 $LogContent = "Context.io Notification $date \n";
 //$data = json_decode($json);
-//$json = file_get_contents('php://input');
-
-// Testing.
-var_dump("Testing");
-$json = '{
-	"message_data": {
-      "sent_at": 1544773737, 
-      "addresses": {
-        "from": {
-            "name": "Timothy Anthony", 
-            "email": "timothy_anthony@ymail.com"
-          }, 
-        "sender": [
-          {
-            "name": "Timothy Anthony", 
-            "email": "timothy_anthony@ymail.com"
-          }
-        ], 
-        "reply_to": [
-          {
-            "name": "Timothy Anthony", 
-            "email": "timothy_anthony@ymail.com"
-          }
-        ], 
-        "to": [
-          {
-            "name": null, 
-            "email": "administration@argosassistance.com"
-          }
-        ], 
-        "cc": [ ], 
-        "bcc": [ ]
-      }, 
-      "subject": "Second Test Email with Attachment", 
-      "list_headers": [ ], 
-      "in_reply_to": null, 
-      "references": [
-        "<1771889794.4219433.1544773737955.ref@mail.yahoo.com>"
-      ], 
-      "files": [
-        {
-          "size": 250266, 
-          "type": "image/jpeg", 
-          "body_section": "2", 
-          "file_name": "=?UTF-8?b?aW1hZ2UtMTQ2NTM0OF85NjBfNzIwLmpwZw==?=", 
-          "content_disposition": "ATTACHMENT", 
-          "content_id": "<5d414923-b3d1-febc-71d8-50d27b0db682@yahoo.com>", 
-          "attachment_id": 1, 
-          "x_attachment_id": null, 
-          "encoding": "BASE64"
-        }
-      ], 
-      "bodies": [
-        {
-          "body_section": "1.1", 
-          "type": "text/plain", 
-          "encoding": "7BIT", 
-          "size": 54
-        }, 
-        {
-          "body_section": "1.2", 
-          "type": "text/html", 
-          "encoding": "7BIT", 
-          "size": 230
-        }
-      ], 
-      "received_headers": [
-        "by 2002:a25:f506:0:0:0:0:0 with SMTP id a6-v6csp1679139ybe;        Thu, 13 Dec 2018 23:51:14 -0800 (PST)", 
-        "from sonic312-22.consmr.mail.bf2.yahoo.com (sonic312-22.consmr.mail.bf2.yahoo.com. [74.6.128.84])        by mx.google.com with ESMTPS id x192si1340279qkb.222.2018.12.13.23.51.14        for <administration@argosassistance.com>        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);        Thu, 13 Dec 2018 23:51:14 -0800 (PST)", 
-        "from sonic.gate.mail.ne1.yahoo.com by sonic312.consmr.mail.bf2.yahoo.com with HTTP; Fri, 14 Dec 2018 07:51:13 +0000"
-      ], 
-      "folders": [
-        "INBOX", 
-        "[Gmail]/Importanti", 
-        "[Gmail]/Tutti i messaggi"
-      ], 
-      "message_id": "167abb2b348eca70", 
-      "gmail_thread_id": "1619812810232875632", 
-      "gmail_message_id": "167abb2b348eca70", 
-      "resource_url": "https://api.context.io/lite/users/5bec053e7d4ab15e280e1ca2/email_accounts/administration%40argosassistance.com%3A%3Agoogleapps/folders/INBOX/messages/167abb2b348eca70"
-    }
-}';
+$json = file_get_contents('php://input');
 
 $data = json_decode($json, true);
 
@@ -188,6 +107,8 @@ include_once 'modules/Messages/Messages.php';
 
 // Message variables
 global $log;
+$log->fatal("Creating a new Message");
+
 $focus_messages = new Messages();
 $focus_messages->column_fields["messagesname"] = $subject;
 $focus_messages->column_fields["assigned_user_id"] = 1;
@@ -197,14 +118,12 @@ $focus_messages->column_fields['thread'] = $thid;
 $focus_messages->column_fields['messageuniqueid'] = $threadID;
 $focus_messages->column_fields['messagesrelatedto'] = $relid;
 $focus_messages->column_fields['linktoproject'] = $ltp;
-//$focus_messages->save("Messages");
-//$mid = $focus_messages->id;
+$focus_messages->save("Messages");
+$message_id = $focus_messages->id;
 
 // Handling attachments
 global $adb,$root_directory;
 $upload_file_path = decideFilePath();
-
-var_dump("File");
 
 define('CONSUMER_KEY', GlobalVariable::getVariable('ContextIOKey', ''));
 define('CONSUMER_SECRET', GlobalVariable::getVariable('ContextIOSecret', ''));
@@ -213,7 +132,6 @@ define('LABEL', '0');
 define('FOLDER', 'Inbox');
 define('MESSAGEID',$data['message_data']['message_id']);
 
-var_dump("Attachments");
 $attachmentid = $data["message_data"]['files'][0]['attachment_id'];
 
 
@@ -226,11 +144,11 @@ $LogContent.= "Context.io Notification $date DIRNAME = $saveasfile \n";
 $contextio = new ContextIO(CONSUMER_KEY,CONSUMER_SECRET);
 
 $contextio->getFileContent(USER_ID, array('label'=>LABEL, 'folder'=>FOLDER,'message_id'=>MESSAGEID,'attachment_id'=> $attachmentid),$saveasfile);
-$file_name = $upload_file_path.$current_id . "_".$data["message_data"]['files'][0]['file_name'];
+$filename = $upload_file_path.$current_id . "_".$data["message_data"]['files'][0]['file_name'];
 
 shell_exec("chmod 777 -R $upload_file_path");
-shell_exec("mv $saveasfile $file_name");
-$saveasfile = $file_name;
+shell_exec("mv $saveasfile $filename");
+//$saveasfile = $filename;
 $LogContent.= "Context.io Notification $date attchmentid  = $attachmentid \n"; 
 $LogContent.= "Context.io Notification $date file_name  = $file_name \n";
 $LogContent.= "Context.io Notification $date to = $sendto_email \n";
@@ -255,7 +173,6 @@ $files = array(
     "size" => filesize($ffn)
     );
 
-$folder = 3;
 require_once("modules/Documents/Documents.php");
 $document = new Documents();
 $document->column_fields['notes_title'] = $file_name;
@@ -264,8 +181,8 @@ $document->column_fields['filesize'] = $files["size"];
 $document->column_fields['filetype'] = $files["type"];
 $document->column_fields['filestatus'] = 1;
 $document->column_fields['filelocationtype'] = 'I';
-$document->column_fields['folderid'] = $folder; // Default Folder 
 $document->column_fields['assigned_user_id'] = $current_user->id;
+$document->column_fields["message"]=$message_id;
 $document->save('Documents');
 
 $sql1 = "insert into vtiger_crmentity
