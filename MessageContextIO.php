@@ -37,11 +37,13 @@ for ($x = 0; $x < count($data["message_data"]["addresses"]["to"]); $x++) {
 
 //Get values of all recievers of the email on CC
 $cc = "";
-for ($x = 0; $x < count($data["message_data"]["addresses"]["cc"]); $x++) {
+if (!empty($data["message_data"]["addresses"]["cc"])) {
+  for ($x = 0; $x < count($data["message_data"]["addresses"]["cc"]); $x++) {
     $cc_values = $data["message_data"]["addresses"]["cc"][$x]["email"];
     if (isset($cc_values)) {
         $cc .= ($cc_values . ', ');
     }
+  }
 }
 
 $current_email_account = $data["message_data"]["addresses"]["to"][0]["email"];
@@ -61,6 +63,7 @@ $checkbymessagethreadid = $adb->query("select * from vtiger_messages join vtiger
 $nr = $adb->num_rows($checkbymessagethreadid);
 
 //if there is already, dont create a new thread
+$ltp = "";
 if (($adb->num_rows($checkbymessagethreadid) > 0)) {
     $thid = $adb->query_result($checkbymessagethreadid, 0, 'thread');
     $ltpq = $adb->query("SELECT linktoproject FROM vtiger_messages WHERE thread= '$thid' AND linktoproject != '0' AND linktoproject != 'null'");
@@ -119,6 +122,11 @@ $focus_messages->column_fields['messageuniqueid'] = $threadID;
 $focus_messages->column_fields['messagesrelatedto'] = $relid;
 $focus_messages->column_fields['linktoproject'] = $ltp;
 $focus_messages->save("Messages");
+$log->fatal(
+  array(
+    'Focus Message' => $focus_messages
+  )
+);
 $message_id = $focus_messages->id;
 
 // Handling attachments
