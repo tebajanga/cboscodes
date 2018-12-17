@@ -10,7 +10,13 @@ include "include/utils/utils.php";
 include_once "modules/Thread/Thread.php";
 include_once "modules/GlobalVariable/GlobalVariable.php";
 include_once "modules/Thread/Thread.php";
+
 global $current_user;
+
+// Current User
+//$current_user = new Users();
+//$current_user->getActiveAdminUser();
+
 $logFile='context.io.log';
 $date=date('l jS \of F Y h:i:s A');
 $LogContent = "Context.io Notification $date \n";
@@ -166,8 +172,8 @@ $LogContent.= "Context.io Notification $date CC = $cc \n";
 $LogContent.= "Context.io Notification $date EMAIL CONTENT = $content \n";
 
 require_once("modules/Users/Users.php");
-$current_user = new Users();
-$current_user->retrieveCurrentUserInfoFromFile(1);
+//$current_user = new Users();
+//$current_user->retrieveCurrentUserInfoFromFile(1);
 $LogContent.= "Context.io Notification $date USERID = $current_user->id \n";
 $finfo = finfo_open(FILEINFO_MIME);
 $ffn = $saveasfile;
